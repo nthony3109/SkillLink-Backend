@@ -21,14 +21,7 @@ public class TechnicianService {
  private Technician technician;
 
  @Column(nullable = false)
-    private String skillname;
+    private String service;
 
-    // Helper to assign technician
-    public void assignTechnician(Technician technician) {
-        this.technician = technician;
-        if (!technician.getSkills().contains(this)) {
-            technician.getSkills().add(this);
-        }
-    }
 
 }
