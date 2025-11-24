@@ -6,22 +6,25 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Builder
 @Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name= "skills")
-@Data
-public class TechnicianService {
+@Table(name= "services")
+public class Service {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  Long id;
- @ManyToOne(fetch = FetchType.LAZY)
- @JoinColumn(name = "technician_id",nullable = false)
- private Technician technician;
 
- @Column(nullable = false)
-    private String service;
+    @Column(nullable = false,unique = true)
+    private  String name;
+
+    @ManyToMany(mappedBy = "services")
+    private Set<Technician> technician = new HashSet<>();
 
 
 }
