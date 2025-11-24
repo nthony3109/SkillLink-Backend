@@ -2,7 +2,7 @@ package com.skillLink.skillLink.Service;
 
 import com.skillLink.skillLink.DTOs.SkillsDTO;
 import com.skillLink.skillLink.Models.Technician;
-import com.skillLink.skillLink.Models.TechnicianService;
+import com.skillLink.skillLink.Models.Service;
 import com.skillLink.skillLink.Repo.TechnicianServiceRepo;
 import com.skillLink.skillLink.Repo.TechnicianRepo;
 import jakarta.transaction.Transactional;
@@ -10,12 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.springframework.data.crossstore.ChangeSetPersister;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+@org.springframework.stereotype.Service
 @RequiredArgsConstructor
 public class TechService {
     // fields injections
@@ -32,10 +30,10 @@ public class TechService {
  }
   for (String skillname : skillsDTO.getSkillName())
   {
-      TechnicianService technicianService = TechnicianService.builder()
+      Service service = Service.builder()
               .skillname(skillname)
               .build();
-      technician.addSkill(technicianService);
+      technician.addSkill(service);
   }
     return technicianRepo.save(technician);
      }
