@@ -14,8 +14,8 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name= "services")
-public class Service {
+@Table(name= "technicianServices")
+public class TechnicianService {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  Long id;
@@ -23,7 +23,7 @@ public class Service {
     @Column(nullable = false,unique = true)
     private  String name;
 
-    @ManyToMany(mappedBy = "services")
+    @ManyToMany(mappedBy = "technicianServices")
     private Set<Technician> technician = new HashSet<>();
 
 
