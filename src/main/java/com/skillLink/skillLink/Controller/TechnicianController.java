@@ -1,7 +1,7 @@
 package com.skillLink.skillLink.Controller;
 
 
-import com.skillLink.skillLink.DTOs.TechnicianRegisterReq;
+import com.skillLink.skillLink.DTOs.*;
 import com.skillLink.skillLink.Models.Technician;
 import com.skillLink.skillLink.Service.TechService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -69,9 +69,87 @@ public class TechnicianController {
 
         return ResponseEntity.ok(techService.getTechnicianById(technicianId));
     }
+
     @GetMapping("/all")
     @Operation(summary = "to get all registered technicians")
     public ResponseEntity<?> getAllTechnicians() {
         return ResponseEntity.ok(techService.getAllTechnicians());
+    }
+
+    @PutMapping("/{technicianId}/update/location")
+    @Operation(summary = "to update technician location by lat and lng")
+    public ResponseEntity<?> updateTechnicianLocation(@Valid @RequestBody UpdateLocationReq dto,
+            @PathVariable Long technicianId) {
+        boolean isUpdated = techService.updateTechnicianLocation(
+                technicianId,
+                dto.getLat(), dto.getLng()
+        );
+        if (!isUpdated) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Failed to update location");
+        }
+        return ResponseEntity.ok("Location updated successfully");
+    }
+
+    @PutMapping("/{technicianId}/update/bio")
+    @Operation(summary = "to update technician bio")
+    public ResponseEntity<?> updateTechnicianBio(@Valid
+                                                     @RequestBody UpdateBioReq req,
+                                                 @PathVariable Long technicianId) {
+        boolean isBioUpdated = techService.updateTechnicianBio(
+                technicianId,
+                req.getBio()
+        );
+        if (!isBioUpdated) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Failed to update bio");
+        }
+        return  ResponseEntity.status(HttpStatus.ACCEPTED).body("bio updated successful");
+    }
+
+    @PutMapping("/{technicianId}/update/location-name")
+    @Operation(summary = "to update technician location name")
+    public ResponseEntity<?> updateTechnicianLocationName(@Valid
+                                                          @RequestBody UpdateLocationNameReq req,
+                                                          @PathVariable Long technicianId) {
+        boolean isLocationNameUpdated = techService.updateTechnicianLocationName(
+                technicianId,
+                req.getLocationName());
+        if (!isLocationNameUpdated) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Failed to update location name");
+        }
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("location name updated successful");
+    }
+
+    @PutMapping("/{technicianId}/update/phone")
+    @Operation(summary = "to update technician phone number")
+    public ResponseEntity<?> updateTechnicianPhone(@PathVariable Long technicianId,
+                                                   @Valid @RequestBody UpdatePhoneReq req) {
+        boolean isPhoneUpdated = techService.updateTechnicianPhone(
+                technicianId,
+                req.getPhone());
+        if (!isPhoneUpdated) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Failed to update phone number");
+        }
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("phone number updated successful");
+    }
+
+    @PutMapping("/{technicianId}/add/service")
+    @Operation(summary = "to add service to technician")
+    public ResponseEntity<?> addServiceToTechnician(@PathVariable Long technicianId,
+                                                    @Valid @RequestBody AddServiceToTechnicianReq req) {
+         techService.addServiceToTechnician(technicianId, req.getName());
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("service added to technician successful");
+    }
+
+    @PutMapping("/{technicianId}/update/service")
+    @Operation(summary = "to update service of technician")
+    public ResponseEntity<?> updateServiceOfTechnician(@PathVariable Long technicianId,
+                                                       @Valid @RequestBody UpdateServiceReq req) {
+        techService.updateService(technicianId, req.getOldServiceName(), req.getNewServiceName());
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("service updated successful");
     }
 }
