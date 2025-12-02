@@ -152,4 +152,11 @@ public class TechnicianController {
         techService.updateService(technicianId, req.getOldServiceName(), req.getNewServiceName());
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("service updated successful");
     }
+
+    @DeleteMapping("/{technicianId}/delete/service")
+    @Operation(summary = "to delete service from technician")
+    public ResponseEntity<?> deleteServiceFromTechnician(@PathVariable Long technicianId, @Valid @RequestBody DeleteServiceReq req) {
+        techService.deleteServiceFromTechnician(technicianId, req.getServiceName());
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("service deleted from technician successful");
+    }
 }
