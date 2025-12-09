@@ -44,10 +44,12 @@ public class TechnicianController {
                             .map(DefaultMessageSourceResolvable::getDefaultMessage)
                             .toList());
         }
-        return techService.registerTechnician( req)? ResponseEntity
-                .status(HttpStatus.CREATED).body("technician registered ") : ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body("registration failed");
+        LoginRes res = techService.registerTechnician(req);
+//        return res == null ? ResponseEntity
+//                .status(HttpStatus.CREATED).body(res) : ResponseEntity
+//                .status(HttpStatus.BAD_REQUEST)
+//                .body("registration failed");
+        return ResponseEntity.ok(res);
     }
 
     @PutMapping("/{technicianId}/profile-image")
@@ -158,5 +160,25 @@ public class TechnicianController {
     public ResponseEntity<?> deleteServiceFromTechnician(@PathVariable Long technicianId, @Valid @RequestBody DeleteServiceReq req) {
         techService.deleteServiceFromTechnician(technicianId, req.getServiceName());
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("service deleted from technician successful");
+    }
+
+    @PostMapping("/login")
+    @Operation(summary = "technician login")
+    public ResponseEntity<?> technicianLogin(@Valid @RequestBody TechnicianLoginReq req){
+        LoginRes res = techService.loginTechnicianIn(req);
+        if (res == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("login failed");
+        }
+            return ResponseEntity.ok(res);
+    }
+
+    @PostMapping("check_email")
+    @Operation(summary = "check if the the email exist before Registration")
+    public ResponseEntity<?> checkIfEmailAlreadyExist(@RequestBody String email) {
+        boolean isExisting= techService.checkIfEmailAlreadyExist(email);
+        if (isExisting) {
+            return ResponseEntity.status(HttpStatus.FOUND).body("email already taken");
+        }
+        return ResponseEntity.ok(null);
     }
 }
