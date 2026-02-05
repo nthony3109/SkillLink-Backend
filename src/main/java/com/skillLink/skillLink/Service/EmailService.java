@@ -25,6 +25,7 @@ public class EmailService {
           helper.setTo(to);
           helper.setSubject(subject);
           helper.setText(content.EmailBody(),true);
+          mailSender.send(mimeMailMessage);
       } catch (Exception e) {
           throw new RuntimeException(e);
       }
