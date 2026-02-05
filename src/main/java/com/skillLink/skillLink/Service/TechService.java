@@ -53,7 +53,7 @@ public class TechService {
     private final AuthenticationManager authenticationManager;
     private  final RestTemplate restTemplate = new RestTemplate();
     private  final RedisService redisService;
-    private  EmailService emailService;
+    private final EmailService emailService;
 
     @Transactional
     public LoginRes registerTechnician(TechnicianRegisterReq req) {
@@ -388,10 +388,13 @@ public class TechService {
 
     }
 
-    public boolean checkIfEmailAlreadyExist(@NotBlank(message = "email is blank") String email) {
+    public boolean checkIfEmailAlreadyExist( String email) {
         boolean exists = technicianRepo.existsByEmail(email);
         if (!exists) {
            String code =  redisService.GenerateCode();
+           System.out.println(
+                     "Generated verification code: " + code
+           );
            redisService.saveCode(email,code);
             EmailContent content = new VerificationCodeEmail(code);
             emailService.sendEmail(email,"Verification Code",content);
