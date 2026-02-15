@@ -1,19 +1,19 @@
 package com.skillLink.skillLink.Models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.jspecify.annotations.Nullable;
 import org.locationtech.jts.geom.Point;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Builder
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "technicians")
@@ -22,37 +22,43 @@ public class Technician {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id ;
     private String firstname;
-    private String latename;
+    private String lastname;
     private String othernames;
-    @Column(nullable = false,updatable = true)
+    private String username;
+    @Column(nullable = true,updatable = true)
     private String phone;
+
     @Column(nullable = false,updatable = true)
     private  String email;
+
+    private String password;
+
+    private String role;
+
     private String profileImageUrl;
 
+    private  String locationName;
+
+    private String bio;
+
     // Spatial location stored as POINT (longitude, latitude)
-    @Column(columnDefinition = "POINT SRID 4326", nullable = false)
+    @Column(columnDefinition = "POINT SRID 4326")
     private Point location;
 
+    @Column(nullable = false)
+    private boolean enabled = true;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "technician", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<TechnicianService> skills;
+    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable(name = "technician_service",
+    joinColumns = @JoinColumn(name = "technician_id"),
+    inverseJoinColumns = @JoinColumn(name = "service_id"))
+    private Set<TechnicianServiceModel>  serviceModels = new HashSet<>();
 
-    // method for more efficient bidirectional relationship
-    public void addSkill(TechnicianService skill) {
-        if (skills.size() > 3) {
-            throw new IllegalArgumentException("A technician can have a maximum of 3 skills.");
-        }
-        skill.setTechnician(this);
-        this.skills.add(skill);
-    }
+    @OneToMany(mappedBy = "technician", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<RefreshToken> refreshTokens = new HashSet<>();
 
-    public void removeSkill(TechnicianService skill) {
-        skill.setTechnician(null);
-        this.skills.remove(skill);
-    }
 }
 
