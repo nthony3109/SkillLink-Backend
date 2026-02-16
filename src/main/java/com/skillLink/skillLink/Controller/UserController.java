@@ -1,7 +1,7 @@
 package com.skillLink.skillLink.Controller;
 
 import com.skillLink.skillLink.DTOs.GetNearByTechniciansReq;
-import com.skillLink.skillLink.DTOs.NearByTechnciansRes;
+import com.skillLink.skillLink.DTOs.NearByTechniciansRes;
 import com.skillLink.skillLink.Service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,14 +26,14 @@ public class UserController {
     @PostMapping("/nearBy_technicians")
     @Operation(summary = "to get nearby technicians for a user")
     public ResponseEntity<?> getNearbyTechnicians(@Valid @RequestBody GetNearByTechniciansReq nearByDTO) {
-        List<NearByTechnciansRes> nearByTechnciansRes = userService.getNearbyTechnicians(nearByDTO,radiusInKm);
-        if (nearByTechnciansRes.isEmpty()) {
+        List<NearByTechniciansRes> nearByTechniciansRes = userService.getNearbyTechnicians(nearByDTO,radiusInKm);
+        if (nearByTechniciansRes.isEmpty()) {
          radiusInKm = 20.0;
-            nearByTechnciansRes   = userService.getNearbyTechnicians(nearByDTO, radiusInKm);
+            nearByTechniciansRes = userService.getNearbyTechnicians(nearByDTO, radiusInKm);
         }
-        if (nearByTechnciansRes.isEmpty()){
+        if (nearByTechniciansRes.isEmpty()){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("no user technician found");
         }
-        return ResponseEntity.status(HttpStatus.FOUND).body(nearByTechnciansRes);
+        return ResponseEntity.status(HttpStatus.FOUND).body(nearByTechniciansRes);
     }
 }
