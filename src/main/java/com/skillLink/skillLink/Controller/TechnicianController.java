@@ -3,12 +3,14 @@ package com.skillLink.skillLink.Controller;
 
 import com.skillLink.skillLink.DTOs.*;
 import com.skillLink.skillLink.Models.Technician;
+import com.skillLink.skillLink.Service.RedisService;
 import com.skillLink.skillLink.Service.TechService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -24,9 +26,11 @@ public class TechnicianController {
 // for field injections
     @Autowired
     private TechService techService;
+    @Autowired
+    private RedisService redisService;
 
     @GetMapping("/test")
-    @Operation(summary = "to test the swagger setup aand the app")
+    @Operation(summary = "to test the swagger setup and the app")
     public String returnText() {
         return "hello from technician controller";
     }
@@ -174,11 +178,22 @@ public class TechnicianController {
 
     @PostMapping("check_email")
     @Operation(summary = "check if the the email exist before Registration")
-    public ResponseEntity<?> checkIfEmailAlreadyExist(@RequestBody String email) {
-        boolean isExisting= techService.checkIfEmailAlreadyExist(email);
+    public ResponseEntity<?> checkIfEmailAlreadyExist(@RequestBody EmailReq req) {
+        boolean isExisting= techService.checkIfEmailAlreadyExist(req.getEmail());
         if (isExisting) {
             return ResponseEntity.status(HttpStatus.FOUND).body("email already taken");
         }
         return ResponseEntity.ok(null);
+    }
+
+
+    @PostMapping("verify_otp")
+    @Operation(summary = "to verify otp during registration")
+    public ResponseEntity<?> verifyOtp(@RequestBody VerifyOtpReq req) {
+      boolean isOtpValid = redisService.verifyCode(req.getEmail(), req.getOtp());
+      if (!isOtpValid) {
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("failed to verify otp");
+      }
+        return ResponseEntity.ok("otp verified successfully");
     }
 }
