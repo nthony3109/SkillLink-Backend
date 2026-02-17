@@ -1,0 +1,47 @@
+services:
+  app:
+    build: .
+    container_name: skilllink-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/skilllinkapp_db
+      SPRING_DATASOURCE_USERNAME: skilllinkapp
+      SPRING_DATASOURCE_PASSWORD: skilllinkpass
+      SPRING_DATA_REDIS_HOST: redis
+  #      SPRING_DATA_REDIS_PORT: 6379
+
+  mysql:
+    image: mysql:8.0
+    container_name: skilllink-mysql
+    environment:
+      MYSQL_DATABASE: skilllinkapp_db
+      MYSQL_USER: skilllinkapp
+      MYSQL_PASSWORD: skilllinkpass
+      MYSQL_ROOT_PASSWORD: rootpass
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpass"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 90s
+
+  redis:
+    image: redis:7-alpine
+    container_name: skilllink-redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  mysql_data:
